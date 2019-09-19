@@ -1,8 +1,21 @@
 package geometry
 
+import "math"
+
+// Shape contains floating point geometric caluclations
+type Shape interface {
+	Area() float64
+}
+
+// Rectangle has a width and height
 type Rectangle struct {
 	Width  float64
 	Height float64
+}
+
+// Circle has a radius
+type Circle struct {
+	Radius float64
 }
 
 // Perimeter of a rectangle
@@ -11,6 +24,11 @@ func Perimeter(r Rectangle) float64 {
 }
 
 // Area of a rectangle
-func Area(r Rectangle) float64 {
+func (r Rectangle) Area() float64 {
 	return r.Width * r.Height
+}
+
+// Area of a Circle
+func (c Circle) Area() float64 {
+	return math.Pi * c.Radius * c.Radius
 }

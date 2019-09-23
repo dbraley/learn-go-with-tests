@@ -1,6 +1,9 @@
 package maps
 
-import "testing"
+import (
+	"errors"
+	"testing"
+)
 
 func TestSearch(t *testing.T) {
 	dictionary := Dictionary{"test": "this is just a test"}
@@ -25,13 +28,26 @@ func TestSearch(t *testing.T) {
 }
 
 func TestAdd(t *testing.T) {
-	dictionary := Dictionary{}
-	word := "test"
-	definition := "this is just a test"
+	t.Run("new word", func(t *testing.T) {
+		dictionary := Dictionary{}
+		word := "test"
+		definition := "this is just a test"
 
-	dictionary.Add(word, definition)
+		err := dictionary.Add(word, definition)
 
-	assertDefinition(t, dictionary, word, definition)
+		assertError(t, err, nil)
+		assertDefinition(t, dictionary, word, definition)
+	})
+
+	t.Run("existing word", func(t *testing.T) {
+		word := "test"
+		definition := "this is just a test"
+		dictionary := Dictionary{word: definition}
+		err := dictionary.Add(word, "new test")
+
+		assertError(t, err, errors.New("cannot add word because it already exists"))
+		assertDefinition(t, dictionary, word, definition)
+	})
 }
 
 func assertDefinition(t *testing.T, dictionary Dictionary, word, definition string) {
@@ -52,5 +68,26 @@ func assertStrings(t *testing.T, got, want string) {
 
 	if got != want {
 		t.Errorf("got %q want %q", got, want)
+	}
+}
+
+func assertError(t *testing.T, got error, want error) {
+	t.Helper()
+	if got == nil && want != nil {
+		t.Fatal("didn't get an error but wanted one")
+		return
+	}
+
+	if want == nil && got != nil {
+		t.Fatalf("Got an error %q but didn't want one", got)
+		return
+	}
+
+	if got == nil && want == nil {
+		return
+	}
+
+	if got.Error() != want.Error() {
+		t.Errorf("got %q, want %q", got, want)
 	}
 }

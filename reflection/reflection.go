@@ -6,7 +6,9 @@ func walk(x interface{}, fn func(input string)) {
 	val := getVal(x)
 
 	numberOfValues := 0
-	var getVal func(int) reflect.Value
+	getVal := func(i int) reflect.Value {
+		return val
+	}
 
 	switch val.Kind() {
 	case reflect.Struct:
